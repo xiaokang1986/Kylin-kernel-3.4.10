@@ -135,22 +135,19 @@
 #define PHY_BASE_ADDR1       0x48000000
 #define SIZE_ADDR1           0x28000000
 
-#define MSM_ION_SF_SIZE      0x3600000
+#define MSM_ION_SF_SIZE      0x4000000
+
 #define MSM_ION_MM_FW_SIZE   0x200000
-#define MSM_ION_MM_SIZE      0x2700000
+#define MSM_ION_MM_SIZE      0x4800000
 #define MSM_ION_MFC_SIZE     0x100000
 #define MSM_ION_WB_SIZE      0x2FD000
-#define MSM_ION_CAMERA_SIZE  0x3000000
+#define MSM_ION_CAMERA_SIZE  0x2000000
 #define MSM_ION_AUDIO_SIZE   0x4CF000
 
 #define MSM_ION_HEAP_NUM     8
 
-#define MSM_ION_SF_BASE      0x38000000
-#define MSM_ION_MM_FW_BASE   0x40400000
-#define MSM_ION_MM_BASE      0x40600000
-#define MSM_ION_MFC_BASE     0x42D00000
+#define MSM_ION_CAMERA_BASE  0x40E00000
 #define MSM_ION_WB_BASE      0x46400000
-#define MSM_ION_CAMERA_BASE  0x49800000
 
 #ifdef CONFIG_CPU_FREQ_GOV_ONDEMAND_2_PHASE
 int set_two_phase_freq(int cpufreq);
@@ -2688,11 +2685,10 @@ static struct ion_platform_data ion_pdata = {
 			.name	= ION_VMALLOC_HEAP_NAME,
 		},
 		{
-			.id	= 	ION_SF_HEAP_ID,
+			.id	= ION_SF_HEAP_ID,
 			.type	= ION_HEAP_TYPE_CARVEOUT,
 			.name	= ION_SF_HEAP_NAME,
 			.size	= MSM_ION_SF_SIZE,
-			.base	= MSM_ION_SF_BASE,
 			.memory_type = ION_SMI_TYPE,
 			.extra_data = &co_sf_ion_pdata,
 		},
@@ -2701,7 +2697,6 @@ static struct ion_platform_data ion_pdata = {
 			.type	= ION_HEAP_TYPE_CP,
 			.name	= ION_MM_HEAP_NAME,
 			.size	= MSM_ION_MM_SIZE,
-			.base	= MSM_ION_MM_BASE,
 			.memory_type = ION_EBI_TYPE,
 			.extra_data = &cp_mm_ion_pdata,
 		},
@@ -2710,7 +2705,6 @@ static struct ion_platform_data ion_pdata = {
 			.type	= ION_HEAP_TYPE_CARVEOUT,
 			.name	= ION_MM_FIRMWARE_HEAP_NAME,
 			.size	= MSM_ION_MM_FW_SIZE,
-			.base	= MSM_ION_MM_FW_BASE,
 			.memory_type = ION_EBI_TYPE,
 			.extra_data = &co_mm_fw_ion_pdata,
 		},
@@ -2719,7 +2713,6 @@ static struct ion_platform_data ion_pdata = {
 			.type	= ION_HEAP_TYPE_CP,
 			.name	= ION_MFC_HEAP_NAME,
 			.size	= MSM_ION_MFC_SIZE,
-			.base	= MSM_ION_MFC_BASE,
 			.memory_type = ION_EBI_TYPE,
 			.extra_data = &cp_mfc_ion_pdata,
 		},
@@ -2780,11 +2773,6 @@ static void __init reserve_ion_memory(void)
 {
 #ifdef CONFIG_ION_MSM
 	unsigned int i;
-	int ret;
-
-	ret = memblock_remove(MSM_ION_CAMERA_BASE, MSM_ION_CAMERA_SIZE);
-	BUG_ON(ret);
-
 	for (i = 0; i < ion_pdata.nr; ++i) {
 		struct ion_platform_heap *heap = &(ion_pdata.heaps[i]);
 		if(heap->base == 0) {
